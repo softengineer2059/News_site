@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+		{% block styles %}
+		<!-- Select2 css -->
+		<link href="{% static ''%}assets/plugins/select2/select2.min.css" rel="stylesheet" />
+		{% endblock styles %}
+
+					{% block body %}
+
+						<!--Page header-->
+						<div class="page-header">
+							<div class="page-leftheader">
+								<h4 class="page-title">Страница пользователя</h4>
+							</div>
+							<div class="page-rightheader ms-auto d-lg-flex d-none">
+								<ol class="breadcrumb">
+									<li class="breadcrumb-item"><a href="{% url 'main' %}" class="d-flex"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3zm5 15h-2v-6H9v6H7v-7.81l5-4.5 5 4.5V18z"/><path d="M7 10.19V18h2v-6h6v6h2v-7.81l-5-4.5z" opacity=".3"/></svg><span class="breadcrumb-icon"> Главная</span></a></li>
+									<li class="breadcrumb-item"><a>Профиль</a></li>
+								</ol>
+							</div>
+						</div>
+						<!--End Page header-->
+
+						<!-- Row -->
+						<div class="row">
+							<div class="col-xl-4 col-lg-5">
+								<div class="card box-widget widget-user">
+									{% if user_info.avatar %}
+										<div class="widget-user-image mx-auto mt-5 text-center"><img alt="User Avatar" class="rounded-circle" src="{{ MEDIA_URL }}{{ user_info.avatar }}"></div>
+									{% elif user.is_authenticated %}
+										<div class="widget-user-image mx-auto mt-5 text-center"><img alt="User Avatar" class="rounded-circle" src="{{ MEDIA_URL }}avatars/active.jpg"></div>
+									{% else %}
+										<div class="widget-user-image mx-auto mt-5 text-center"><img alt="User Avatar" class="rounded-circle" src="{{ MEDIA_URL }}avatars/non_active.jpg"></div>
+									{%  endif %}
+									<div class="card-body text-center">
+										<div class="pro-user">
+											<h3 class="pro-user-username text-dark mb-1">{{ user.first_name }} {{ user.last_name }}</h3>
+											{% if user.is_staff %}
+												<h6 class="pro-user-desc text-muted">Администратор</h6>
+											{% elif user.groups.all.0.name == "Модераторы" %}
+												<h6 class="pro-user-desc text-muted">Модератор</h6>
+											{% else %}
+												<h6 class="pro-user-desc text-muted">Пользователь</h6>
+											{% endif %}
+
+											<form id="avatar-form" action="{% url 'upload_avatar' %}" method="post" enctype="multipart/form-data">
+												{% csrf_token %}
+												<label class="input-group-btn">
+													<span class="btn btn-primary">
+														Сменить фото <input id="file-input" name="image" type="file" style="display: none;">
+													</span>
+												</label>
+											</form>
+										</div>
+
+										<br>
+
+										<div class="card-body">
+											<h4 class="card-title">Информация</h4>
+											<div class="table-responsive">
+												<table class="table mb-0">
+													<tbody>
+														<tr>
+															<td class="py-2 px-0">
+																<span class="font-weight-semibold w-50">Email </span>
+															</td>
+															<td class="py-2 px-0">{{ user.email }}</td>
+														</tr>
+														<tr>
+															<td class="py-2 px-0">
+																<span class="font-weight-semibold w-50">Дата регистрации </span>
+															</td>
+															<td class="py-2 px-0">{{ user.date_joined }}</td>
+														</tr>
+														<tr>
+															<td class="py-2 px-0">
+																<span class="font-weight-semibold w-50">Последний вход </span>
+															</td>
+															<td class="py-2 px-0">{{ user.last_login }}</td>
+														</tr>
+														<tr>
+															<td class="py-2 px-0">
+																<span class="font-weight-semibold w-50">Заказов </span>
+															</td>
+															<td class="py-2 px-0">0</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+								<div class="col-xl-8 col-lg-7">
+									<form action="{% url 'change_base_info' %}" method="post">
+										{% csrf_token %}
+										<div class="card">
+											<div class="card-header">
+												<div class="card-title">Редактировать</div>
+											</div>
+											<div class="card-body">
+												<div class="row">
+													<div class="col-sm-6 col-md-6">
+														<div class="mb-3">
+															<label class="form-label">Имя</label>
+															<input name="first_name" type="text" class="form-control" placeholder="Фамилия" value="{{ user.first_name }}">
+														</div>
+													</div>
+													<div class="col-sm-6 col-md-6">
+														<div class="mb-3">
+															<label class="form-label">Фамилия</label>
+															<input name="last_name" type="text" class="form-control" placeholder="Фамилия" value="{{ user.last_name }}">
+														</div>
+													</div>
+													<div class="col-sm-6 col-md-6">
+														<div class="mb-3">
+															<label class="form-label">Email address</label>
+															<input name="email" type="email" class="form-control" placeholder="Email" value="{{ user.email }}">
+														</div>
+													</div>
+													<div class="col-sm-6 col-md-6">
+														<div class="mb-3">
+															<label class="form-label">Ник</label>
+															<input name="username" type="text" class="form-control" placeholder="Ник" value="{{ user.username }}">
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="card-footer text-end">
+												<button class="btn btn-lg btn-primary" type="submit">Изменить</button>
+											</div>
+										</div>
+									</form>
+
+									<div class="card">
+										{% if messages %}
+											{% for message in messages %}
+												<div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+													{{ message }}
+												</div>
+											{% endfor %}
+										{% endif %}
+
+										<form method="post" action="{% url 'change_password' %}">
+											{% csrf_token %}
+											<div class="card-header">
+												<div class="card-title">Смена пароля</div>
+											</div>
+											<div class="card-body">
+												<div class="mb-3">
+													<label class="form-label">Текущий пароль</label>
+													<input type="password" class="form-control" name="current_password">
+												</div>
+												<div class="mb-3">
+													<label class="form-label">Новый пароль</label>
+													<input type="password" class="form-control" name="new_password1">
+												</div>
+												<div class="mb-3">
+													<label class="form-label">Подтвердите новый пароль</label>
+													<input type="password" class="form-control" name="new_password2">
+												</div>
+											</div>
+											<div class="card-footer text-end">
+												<button type="submit" class="btn btn-primary">Сменить</button>
+												<a href="{% url 'profile' %}" class="btn btn-danger">Отмена</a>
+											</div>
+										</form>
+									</div>
+								</div>
+						</div>
+						<!-- End Row-->
+					{% endblock body %}
+					
+		{% block scripts %}
+			<script src="{% static '' %}assets/js/avatar_img_upload.js"></script>
+		{% endblock scripts %}
