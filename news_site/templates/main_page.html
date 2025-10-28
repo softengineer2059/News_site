@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+{% load static%}
+
+		{% block styles %}
+        <!-- Prism Css -->
+        <link href="{% static ''%}assets/plugins/prism/prism.css" rel="stylesheet">
+        <link href="{% static ''%}assets/plugins/jvectormap/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
+
+        <!-- Select2 css -->
+        <link href="{% static ''%}assets/plugins/select2/select2.min.css" rel="stylesheet" />
+
+        <!-- News-Ticker css-->
+        <link href="{% static ''%}assets/plugins/newsticker/newsticker.css" rel="stylesheet" />
+
+        <!--Daterangepicker css-->
+        <link href="{% static ''%}assets/plugins/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
+
+		{% endblock styles %}
+
+					{% block body %}
+                    <!--Page header-->
+                    <div class="page-header">
+                        <div class="page-leftheader">
+                            <h4 class="page-title">Новости</h4>
+                        </div>
+                        <div class="page-rightheader ms-auto d-lg-flex d-none">
+                            {% if perms.articles.add_article %}
+                                <a class="btn btn-primary" href="{% url 'create_article' %}">Добавить статью</a>
+                            {% endif %}
+
+                            {% if perms.articles.view_category %}
+                                <a class="btn btn-primary" href="{% url 'category_list' %}">Список категорий</a>
+                            {% endif %}
+
+                            {% if perms.articles.view_subcategory %}
+                                <a class="btn btn-primary" href="{% url 'subcategory_list' %}">Список подкатегорий</a>
+                            {% endif %}
+
+                            {% if perms.articles.view_tag %}
+                                <a class="btn btn-primary" href="{% url 'tags_list' %}">Список тегов</a>
+                            {% endif %}
+
+                            {% if perms.articles.view_country %}
+                                <a class="btn btn-primary" href="{% url 'country_list' %}">Список стран</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!--End Page header-->
+
+                    <!-- Row -->
+
+
+                        <div class="row">
+                            <div class="col-xl-12 col-md-12 col-lg-12">
+                                <div class="">
+                                    <div class="js-conveyor-example jctkr-wrapper jctkr-initialized">
+                                        <ul class="news-crypto" style="width: 6993.81px; left: -2892.39px;">
+                                            {% for article in popular_articles %}
+                                                <a href="{% url 'article_detail' article.slug %}">
+                                                    <li style="">
+                                                        <span>{{ article.title }}</span>
+                                                    </li>
+                                                </a>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Карта мира</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div id="world-map-markers" class="worldh" style="height:300px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                   <div class="row">
+                       {% for category in categories %}
+
+                                <div class="col-xl-3 col-md-12 col-lg-6">
+                                    <a href="{{ main_url }}?&category={{ category.id }}">
+                                    <div class="card overflow-hidden" style="height: 200px;">
+                                            <div class="card-body p-0 position-relative h-100">
+                                                <!-- Картинка на весь размер -->
+                                                <img src="/media/{{ category.image }}" class="w-100 h-100 object-fit-cover" alt="img">
+
+                                                <!-- Текст поверх картинки внизу -->
+                                                <div class="position-absolute bottom-0 start-0 w-100 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7)); text-align: center;">
+                                                    <h3 class="mb-0 font-weight-bold">{{ category.name }}</h3>
+                                                </div>
+                                            </div>
+                                    </div>
+                                    </a>
+                               </div>
+
+                       {% endfor %}
+                   </div>
+
+
+                    <div class="row">
+                        {% for article in articles %}
+                            <div class="col-xl-4 col-lg-6 col-md-12">
+                                <div class="card overflow-hidden">
+                                    <div class="item7-card-img">
+                                        <a href="{% url 'article_detail' article.slug %}">
+                                            <img src="{% get_media_prefix %}{{ article.images.first.image }}" alt="{{ article.images.first.caption|default:'' }}" class="cover-image w-100">
+                                        </a>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="item7-card-desc d-flex mb-5">
+                                            <a href="javascript:void(0)" class="d-flex"><svg class="svg-icon me-2" xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 2v3H4V5h16zM4 21V10h16v11H4z"/><path d="M4 5.01h16V8H4z" opacity=".3"/></svg><div class="mt-0">{{ article.created_at }}</div></a>
+                                            <a href="javascript:void(0)" class="d-flex ms-3">
+                                                <svg class="svg-icon me-2" xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 24 24" width="18">
+                                                    <path d="M0 0h24v24H0V0z" fill="none"/>
+                                                    <path d="M12 6c3.79 0 7.17 2.13 8.82 5.5C19.17 14.87 15.79 17 12 17s-7.17-2.13-8.82-5.5C4.83 8.13 8.21 6 12 6m0-2C7 4 2.73 7.11 1 11.5 2.73 15.89 7 19 12 19s9.27-3.11 11-7.5C21.27 7.11 17 4 12 4zm0 5c1.38 0 2.5 1.12 2.5 2.5S13.38 14 12 14s-2.5-1.12-2.5-2.5S10.62 9 12 9m0-2c-2.48 0-4.5 2.02-4.5 4.5S9.52 16 12 16s4.5-2.02 4.5-4.5S14.48 7 12 7z"/>
+                                                </svg>
+                                                <div class="mt-0">{{ article.views }} просмотров</div>
+                                            </a>
+                                        </div>
+                                        <div class="media py-3 mt-0 border-top">
+                                            <div class="media-user me-2">
+                                                <div class="avatar-list avatar-list-stacked">
+                                                    <h5 class="font-weight-semibold">Категория: {{ article.category }}</h5>
+                                                </div>
+                                            </div>
+                                            <div class="ms-auto">
+                                                <div class="d-flex">
+                                                    <h5 class="font-weight-semibold">Страна: {{ article.country }}</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="{% url 'article_detail' article.slug %}" class="mt-4">
+                                            <h5 class="font-weight-semibold">{{ article.title }}</h5>
+                                        </a>
+                                        <p>{{ article.short_description }}</p>
+                                    </div>
+
+                                    {% if perms.articles.change_article %}
+                                        <a href="{% url 'edit_article' article.slug %}" class="btn btn-light btn-svgs mt-1 mb-1" style="justify-content: center;"><i class="fa fa-cog" data-bs-toggle="tooltip" title="" data-bs-original-title="fa fa-cog" aria-label="fa fa-cog"></i> Изменить</a>
+                                    {% endif %}
+
+                                    {% if perms.articles.delete_article %}
+                                        <button onclick="send_url_to_modal_article({{ article.id }})" type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#smallmodal"><svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M8 9h8v10H8z" opacity=".3"/><path d="M15.5 4l-1-1h-5l-1 1H5v2h14V4zM6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9z"/></svg>Удалить статью</button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <div class="row">
+							<div class="col-xl-12 col-lg-12 col-md-12">
+								<div class="card">
+									<div class="card-header">
+										<h3 class="card-title">Популярные статьи</h3>
+									</div>
+									<div class="card-body">
+										<div class="">
+											<div class="table-responsive">
+												<table class="table card-table table-vcenter text-nowrap mb-0 border">
+													<thead>
+														<tr>
+															<th class="wd-lg-10p">Название статьи</th>
+															<th class="wd-lg-20p text-center">Просмотры</th>
+															<th class="wd-lg-20p text-center">Комментарии</th>
+															<th class="wd-lg-20p text-center">Дата публикации</th>
+															<th class="wd-lg-20p text-center">Автор</th>
+														</tr>
+													</thead>
+                                                    {% for article in popular_articles %}
+                                                        <tbody>
+                                                            <tr>
+                                                                <td><a href="{% url 'article_detail' article.slug %}">{{ article.title }}</a></td>
+                                                                <td class="text-center">{{ article.views }}</td>
+                                                                <td class="text-center">{{ article.get_comments_count }}</td>
+                                                                <td class="text-center">{{ article.created_at }}</td>
+                                                                <td class="text-center">{{ article.author }}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    {% endfor %}
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <ul class="pagination mb-5">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1&paginate_by={{ request.GET.paginate_by|default:3 }}&{% if request.GET.orderby is None %}orderby=-created_at{% else %}orderby={{ request.GET.orderby }}{% endif %}&category={{ request.GET.category }}&search={{ request.GET.search }}">В начало</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&paginate_by={{ request.GET.paginate_by|default:3 }}&{% if request.GET.orderby is None %}orderby=-created_at{% else %}orderby={{ request.GET.orderby }}{% endif %}&category={{ request.GET.category }}&search={{ request.GET.search }}"><</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&paginate_by={{ request.GET.paginate_by|default:3 }}&{% if request.GET.orderby is None %}orderby=-created_at{% else %}orderby={{ request.GET.orderby }}{% endif %}&category={{ request.GET.category }}&search={{ request.GET.search }}">{{ page_obj.previous_page_number }}</a>
+                                </li>
+                            {% endif %}
+
+                            <li class="page-item">
+                                <a class="page-link">{{ page_obj.number }}</a>
+                            </li>
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&paginate_by={{ request.GET.paginate_by|default:3 }}&{% if request.GET.orderby is None %}orderby=-created_at{% else %}orderby={{ request.GET.orderby }}{% endif %}&category={{ request.GET.category }}&search={{ request.GET.search }}">{{ page_obj.next_page_number }}</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&paginate_by={{ request.GET.paginate_by|default:3 }}&{% if request.GET.orderby is None %}orderby=-created_at{% else %}orderby={{ request.GET.orderby }}{% endif %}&search={{ request.GET.search }}">›</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&paginate_by={{ request.GET.paginate_by|default:3 }}&{% if request.GET.orderby is None %}orderby=-created_at{% else %}orderby={{ request.GET.orderby }}{% endif %}&category={{ request.GET.category }}&search={{ request.GET.search }}">В конец</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <!--End Row-->
+                    {% endblock body %}
+
+                    {% block modal %}
+                        <div class="modal  fade" id="smallmodal" tabindex="-1" role="dialog" aria-labelledby="smallmodal" aria-hidden="true">
+                            <div class="modal-dialog modal-sm" role="document">
+                                <form id="remove-link" method="post" action="#">
+                                    {% csrf_token %}
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="smallmodal1">Удаление товара</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Удалить статью?</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
+                                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">да</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {% endblock modal %}
+					
+		{% block scripts %}
+            <!--Бегущая строка js-->
+            <script src="{% static ''%}assets/plugins/newsticker/newsticker.js"></script>
+            <script src="{% static ''%}assets/js/newsticker.js"></script>
+
+            <!-- Карта js -->
+            <script src="{% static ''%}assets/plugins/jvectormap/jquery-jvectormap-2.0.2.min.js"></script>
+            <script src="{% static ''%}assets/plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+            <script src="{% static ''%}assets/plugins/jvectormap/gdp-data.js"></script>
+            <script src="{% static ''%}assets/js/jvectormap.js"></script>
+
+            <!-- Other scripts -->
+            <script src="{% static '' %}assets/js/send_url_to_modal.js"></script>
+
+            <script>
+                const countryUrls = {
+                    {% for country in country_list %}
+                        "{{country.slug}}": "/?paginate_by={{ request.GET.paginate_by|default:9 }}&country={{country.slug}}&search=",
+                    {% endfor %}
+                };
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Находим все элементы стран
+                    const countryElements = document.querySelectorAll('.jvectormap-region');
+
+                    // Добавляем обработчики событий для каждой страны
+                    countryElements.forEach(element => {
+                        const countryCode = element.getAttribute('data-code');
+
+                        // Проверяем, есть ли страна в базе данных
+                        if (countryUrls[countryCode]) {
+                            // Если страна есть в базе - делаем кликабельной
+                            element.style.cursor = 'pointer';
+
+                            // Добавляем обработчик клика
+                            element.addEventListener('click', function() {
+                                window.location.href = countryUrls[countryCode];
+                            });
+
+                            // Добавляем эффект при наведении
+                            element.addEventListener('mouseover', function() {
+                                this.style.fill = '#d4d8e2';
+                            });
+
+                            element.addEventListener('mouseout', function() {
+                                this.style.fill = '#e5e9f2';
+                            });
+                        } else {
+                            // Если страны нет в базе - оставляем некликабельной
+                            element.style.cursor = 'default';
+                            // Можно также изменить цвет для неактивных стран
+                            element.style.fill = '#f0f0f0';
+                        }
+                    });
+                });
+            </script>
+		{% endblock scripts %}
